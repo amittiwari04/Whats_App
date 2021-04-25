@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:WhatsApp/HomeScreen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -69,6 +71,7 @@ class _OtpScreenState extends State<OtpScreen> {
               pinAnimationType: PinAnimationType.fade,
               onSubmit: (pin) async {
                 try {
+                  log('test');
                   await FirebaseAuth.instance
                       .signInWithCredential(PhoneAuthProvider.credential(
                     verificationId: _verificaitonCode,
@@ -88,7 +91,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   });
                 } catch (e) {
                   FocusScope.of(context).unfocus();
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('Invalid OTP'),
                   ));
                 }
@@ -103,34 +106,34 @@ class _OtpScreenState extends State<OtpScreen> {
   _verifyPhone() async {
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: '+91${widget.phone}',
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        try {
-          await FirebaseAuth.instance
-              .signInWithCredential(credential)
-              .then((value) async {
-            if (value != null) {
-              //print('user logged in');
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ),
-                (route) => route.isFirst,
-              );
-            }
-          });
-        } catch (e) {
-          print(e.message);
-        }
+      verificationCompleted: (PhoneAuthCredential credential) {
+        FirebaseAuth.instance
+            .signInWithCredential(credential)
+            .then((value) async {
+          if (value.user != null) {
+            log('user logged in');
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(),
+              ),
+              (route) => route.isFirst,
+            );
+          }
+        }).catchError((e) {
+          log(e.toString());
+        });
       },
       verificationFailed: (FirebaseAuthException e) {
-        print(e.message);
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(e.message),
+        ));
       },
-      codeSent: (String verificationID, int resendToken) {
+      codeSent: (String verificationId, [int forceResendingToken]) {
         setState(() {
           print('hiiiiiiiiiiiiiiiiiiiiih');
-          print(verificationID);
-          _verificaitonCode = verificationID;
+          //  print(verificationID);
+          _verificaitonCode = verificationId;
         });
       },
       codeAutoRetrievalTimeout: (String verificationID) {
