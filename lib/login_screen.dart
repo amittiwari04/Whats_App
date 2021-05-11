@@ -1,4 +1,5 @@
 import 'package:WhatsApp/otp.dart';
+import 'package:WhatsApp/otp_register.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -102,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => OtpScreen(_controller.text),
+                              builder: (context) => OtpRegister(_controller.text),
                             ),
                           );
                         },

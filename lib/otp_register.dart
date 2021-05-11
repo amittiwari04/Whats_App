@@ -1,20 +1,21 @@
 import 'dart:developer';
 
 import 'package:WhatsApp/HomeScreen/home_screen.dart';
-import 'package:WhatsApp/login_screen.dart';
+import 'package:WhatsApp/user_name_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 
-class OtpScreen extends StatefulWidget {
+class OtpRegister extends StatefulWidget {
   final String phone;
-  OtpScreen(this.phone);
+  OtpRegister(this.phone);
+
   @override
-  _OtpScreenState createState() => _OtpScreenState();
+  _OtpRegisterState createState() => _OtpRegisterState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpRegisterState extends State<OtpRegister> {
   final DatabaseReference db = FirebaseDatabase().reference();
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
   String _verificaitonCode;
@@ -83,15 +84,27 @@ class _OtpScreenState extends State<OtpScreen> {
                       .then((value) async {
                     if (value.user != null) {
                       final data =
-                          await db.child('User').child(value.user.uid).child(value.user.uid).once();
-                      if (data.value == null) {
-                        await logout();
+                          await db.child('User').child(value.user.uid).once();
+                          log(data.value);
+                      if (data.value != null) {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                          (route) => route.isFirst,
+                        );
                       }
+                      db.child('User').child(value.user.uid).set({
+                        'phoneNumber': widget.phone,
+                        'userName': '',
+                        'name': ''
+                      });
                       //print('pass to home');
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
+                          builder: (context) => UserNameScreen(widget.phone,value.user.uid),
                         ),
                         (route) => route.isFirst,
                       );
@@ -121,15 +134,27 @@ class _OtpScreenState extends State<OtpScreen> {
             .signInWithCredential(credential)
             .then((value) async {
           if (value.user != null) {
+            // if(db.child('User').child(widget.phone).){
+
+            // }
             final data = await db.child('User').child(value.user.uid).once();
-            if (data.value == null) {
-              await logout();
+            log(data.value);
+            if (data.value != null) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ),
+                (route) => route.isFirst,
+              );
             }
+            db.child('User').child(value.user.uid).set(
+                {'phoneNumber': widget.phone, 'userName': '', 'name': ''});
             log('user logged in');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                builder: (context) => HomeScreen(),
+                builder: (context) => UserNameScreen(widget.phone,value.user.uid),
               ),
               (route) => route.isFirst,
             );
@@ -166,16 +191,5 @@ class _OtpScreenState extends State<OtpScreen> {
   void initState() {
     super.initState();
     _verifyPhone();
-  }
-
-  Future<void> logout() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginScreen(),
-      ),
-      (route) => route.isFirst,
-    );
   }
 }
