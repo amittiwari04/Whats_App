@@ -139,7 +139,7 @@ class _OtpRegisterState extends State<OtpRegister> {
             // }
             final data = await db.child('User').child(value.user.uid).once();
             log(data.value);
-            if (data.value != null) {
+            if (data.value.toString() != null) {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
