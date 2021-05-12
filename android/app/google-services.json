@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "3332810176",
+    "firebase_url": "https://whatsapp-85eb2-default-rtdb.firebaseio.com",
     "project_id": "whatsapp-85eb2",
     "storage_bucket": "whatsapp-85eb2.appspot.com"
   },
@@ -14,11 +15,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "3332810176-sldqgb087071cdvvaollvuhcn1dhjps5.apps.googleusercontent.com",
+          "client_id": "3332810176-i3knkfqlgr9e1u5ipqusuk9v9abkp27n.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.WhatsApp",
             "certificate_hash": "9ef90521eb5585937e3b0b4c77dedf7b0d6aac11"
+          }
+        },
+        {
+          "client_id": "3332810176-nh235lsg2v4rg8nc1ff8u45r76d2kef1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.WhatsApp",
+            "certificate_hash": "bca72d545f3f53ddf52ed19334b110ac32644681"
           }
         },
         {

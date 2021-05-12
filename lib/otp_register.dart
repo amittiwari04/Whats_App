@@ -85,7 +85,7 @@ class _OtpRegisterState extends State<OtpRegister> {
                     if (value.user != null) {
                       final data =
                           await db.child('User').child(value.user.uid).once();
-                          log(data.value);
+
                       if (data.value != null) {
                         Navigator.pushAndRemoveUntil(
                           context,
@@ -94,17 +94,17 @@ class _OtpRegisterState extends State<OtpRegister> {
                           ),
                           (route) => route.isFirst,
                         );
+                        return;
                       }
-                      db.child('User').child(value.user.uid).set({
+                      db.child('User').child(value.user.uid).update({
                         'phoneNumber': widget.phone,
-                        'userName': '',
-                        'name': ''
                       });
                       //print('pass to home');
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UserNameScreen(widget.phone,value.user.uid),
+                          builder: (context) =>
+                              UserNameScreen(widget.phone, value.user.uid),
                         ),
                         (route) => route.isFirst,
                       );
@@ -112,7 +112,7 @@ class _OtpRegisterState extends State<OtpRegister> {
                   });
                 } catch (e) {
                   FocusScope.of(context).unfocus();
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  Scaffold.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Invalid OTP'),
                     ),
@@ -138,8 +138,8 @@ class _OtpRegisterState extends State<OtpRegister> {
 
             // }
             final data = await db.child('User').child(value.user.uid).once();
-            log(data.value);
-            if (data.value.toString() != null) {
+            // log(data.value.toString());
+            if (data.value != null) {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
@@ -147,14 +147,17 @@ class _OtpRegisterState extends State<OtpRegister> {
                 ),
                 (route) => route.isFirst,
               );
+              return;
             }
-            db.child('User').child(value.user.uid).set(
-                {'phoneNumber': widget.phone, 'userName': '', 'name': ''});
+            db.child('User').child(value.user.uid).update({
+              'phoneNumber': widget.phone,
+            });
             log('user logged in');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                builder: (context) => UserNameScreen(widget.phone,value.user.uid),
+                builder: (context) =>
+                    UserNameScreen(widget.phone, value.user.uid),
               ),
               (route) => route.isFirst,
             );
@@ -164,7 +167,7 @@ class _OtpRegisterState extends State<OtpRegister> {
         });
       },
       verificationFailed: (FirebaseAuthException e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        Scaffold.of(context).showSnackBar(
           SnackBar(
             content: Text(e.message),
           ),
@@ -179,7 +182,7 @@ class _OtpRegisterState extends State<OtpRegister> {
       },
       codeAutoRetrievalTimeout: (String verificationID) {
         setState(() {
-          print(verificationID);
+          log(verificationID);
           _verificaitonCode = verificationID;
         });
       },

@@ -15,7 +15,7 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  final DatabaseReference db = FirebaseDatabase().reference();
+  final db = FirebaseDatabase.instance.reference();
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
   String _verificaitonCode;
   final TextEditingController _pinPutController = TextEditingController();
@@ -74,7 +74,6 @@ class _OtpScreenState extends State<OtpScreen> {
               pinAnimationType: PinAnimationType.fade,
               onSubmit: (pin) async {
                 try {
-                  log('test');
                   await FirebaseAuth.instance
                       .signInWithCredential(PhoneAuthProvider.credential(
                     verificationId: _verificaitonCode,
@@ -83,9 +82,10 @@ class _OtpScreenState extends State<OtpScreen> {
                       .then((value) async {
                     if (value.user != null) {
                       final data =
-                          await db.child('User').child(value.user.uid).child(value.user.uid).once();
+                          await db.child('User').child(value.user.uid).once();
                       if (data.value == null) {
                         await logout();
+                        return;
                       }
                       //print('pass to home');
                       Navigator.pushAndRemoveUntil(
@@ -99,7 +99,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   });
                 } catch (e) {
                   FocusScope.of(context).unfocus();
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  Scaffold.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Invalid OTP'),
                     ),
@@ -115,6 +115,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   _verifyPhone() async {
     await FirebaseAuth.instance.verifyPhoneNumber(
+      
       phoneNumber: '+91${widget.phone}',
       verificationCompleted: (PhoneAuthCredential credential) {
         FirebaseAuth.instance
@@ -124,6 +125,7 @@ class _OtpScreenState extends State<OtpScreen> {
             final data = await db.child('User').child(value.user.uid).once();
             if (data.value == null) {
               await logout();
+              return;
             }
             log('user logged in');
             Navigator.pushAndRemoveUntil(
@@ -139,7 +141,8 @@ class _OtpScreenState extends State<OtpScreen> {
         });
       },
       verificationFailed: (FirebaseAuthException e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        log(e.toString());
+        Scaffold.of(context).showSnackBar(
           SnackBar(
             content: Text(e.message),
           ),
@@ -154,7 +157,7 @@ class _OtpScreenState extends State<OtpScreen> {
       },
       codeAutoRetrievalTimeout: (String verificationID) {
         setState(() {
-          print(verificationID);
+          log(verificationID.toString());
           _verificaitonCode = verificationID;
         });
       },

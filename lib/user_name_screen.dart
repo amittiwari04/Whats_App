@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:WhatsApp/HomeScreen/home_screen.dart';
 import 'package:WhatsApp/unique_user.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -6,30 +8,33 @@ import 'package:flutter/material.dart';
 class UserNameScreen extends StatefulWidget {
   final String phone;
   final String uid;
-  UserNameScreen(this.phone,this.uid);
+  UserNameScreen(this.phone, this.uid);
   @override
   _UserNameScreenState createState() => _UserNameScreenState();
 }
 
 class _UserNameScreenState extends State<UserNameScreen> {
-
-
-  bool alreadyDefined=false;
+  bool alreadyDefined = false;
   final _key = GlobalKey<FormState>();
   String userName;
   String name;
   TextEditingController _nameController = TextEditingController();
   TextEditingController _userNameController = TextEditingController();
 
-  
   Future<bool> checkUserName(String name) async {
-    
-    final data= await  FirebaseDatabase.instance.reference().child('User').child(widget.uid).orderByChild('userName').equalTo(name).once();
-    if(data.value!=null){
+    final data = await FirebaseDatabase.instance
+        .reference()
+        .child('User')
+        .orderByChild('userName')
+        .equalTo(name)
+        .once();
+    // log(data.value.toString());
+    if (data.value != null) {
       return true;
     }
     return false;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,10 +53,9 @@ class _UserNameScreenState extends State<UserNameScreen> {
                   if (val.isEmpty) {
                     return '*Please enter your name';
                   }
-                  
+
                   return null;
                 },
-                
                 onChanged: (val) {
                   name = val;
                 },
@@ -75,21 +79,19 @@ class _UserNameScreenState extends State<UserNameScreen> {
                   if (val.isEmpty || val.length == 0) {
                     return '*Please enter user_name';
                   }
-                  if(alreadyDefined){
+                  if (alreadyDefined) {
                     return 'This username is already taken.';
-                  }
-                  return null;
+                  } else
+                    return null;
                 },
                 onChanged: (val) {
-                  userName = val;
+                  userName = val.trim();
                 },
-                onFieldSubmitted: (String value){
-                  checkUserName(value).then((exists){
-                    alreadyDefined=exists;
-                    
-                  });
-                 
-                },
+                // onFieldSubmitted: (String value) {
+                //   checkUserName(value).then((exists) {
+                //     alreadyDefined = exists;
+                //   });
+                //  },
                 decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15.0),
@@ -114,23 +116,29 @@ class _UserNameScreenState extends State<UserNameScreen> {
                 width: double.infinity,
                 child: TextButton(
                   onPressed: () async {
-                    if (_key.currentState.validate()) {
-                      UniqueUser(userName: userName, name: name);
-                      await FirebaseDatabase()
-                          .reference()
-                          .child('User')
-                          .child(widget.uid)
-                          .update({
-                        'phoneNumber': widget.phone,
-                        'userName': userName,
-                        'name': name,
-                      });
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
-                      );
-                    }
+                    checkUserName(userName).then((value) {
+                      // log(userName);
+                      // log(alreadyDefined.toString());
+                      alreadyDefined = value;
+                      _key.currentState.save();
+                      if (_key.currentState.validate()) {
+                        UniqueUser(userName: userName, name: name);
+                        FirebaseDatabase()
+                            .reference()
+                            .child('User')
+                            .child(widget.uid)
+                            .update({
+                          // 'phoneNumber': widget.phone,
+                          'userName': userName,
+                          'name': name,
+                        });
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
+                      }
+                    });
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
