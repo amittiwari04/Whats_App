@@ -87,12 +87,15 @@ class _OtpRegisterState extends State<OtpRegister> {
                           await db.child('User').child(value.user.uid).once();
 
                       if (data.value != null) {
-                        Navigator.pushAndRemoveUntil(
+                        Navigator.popUntil(
+                          context,
+                          (route) => route.isFirst,
+                        );
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => HomeScreen(),
                           ),
-                          (route) => route.isFirst,
                         );
                         return;
                       }
@@ -100,21 +103,33 @@ class _OtpRegisterState extends State<OtpRegister> {
                         'phoneNumber': widget.phone,
                       });
                       //print('pass to home');
-                      Navigator.pushAndRemoveUntil(
+                      // Navigator.pushAndRemoveUntil(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) =>
+                      //         UserNameScreen(widget.phone, value.user.uid),
+                      //   ),
+                      //   (route) => route.isFirst,
+                      // );
+
+                      Navigator.popUntil(
+                        context,
+                        (route) => route.isFirst,
+                      );
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               UserNameScreen(widget.phone, value.user.uid),
                         ),
-                        (route) => route.isFirst,
                       );
                     }
                   });
                 } catch (e) {
                   FocusScope.of(context).unfocus();
-                  Scaffold.of(context).showSnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Invalid OTP'),
+                      content: const Text('Invalid OTP'),
                     ),
                   );
                 }
@@ -140,12 +155,15 @@ class _OtpRegisterState extends State<OtpRegister> {
             final data = await db.child('User').child(value.user.uid).once();
             // log(data.value.toString());
             if (data.value != null) {
-              Navigator.pushAndRemoveUntil(
+              Navigator.popUntil(
+                context,
+                (route) => route.isFirst,
+              );
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => HomeScreen(),
                 ),
-                (route) => route.isFirst,
               );
               return;
             }
@@ -153,13 +171,25 @@ class _OtpRegisterState extends State<OtpRegister> {
               'phoneNumber': widget.phone,
             });
             log('user logged in');
-            Navigator.pushAndRemoveUntil(
+            // Navigator.pushAndRemoveUntil(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) =>
+            //         UserNameScreen(widget.phone, value.user.uid),
+            //   ),
+            //   (route) => route.isFirst,
+            // );
+
+            Navigator.popUntil(
+              context,
+              (route) => route.isFirst,
+            );
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) =>
                     UserNameScreen(widget.phone, value.user.uid),
               ),
-              (route) => route.isFirst,
             );
           }
         }).catchError((e) {
@@ -167,7 +197,7 @@ class _OtpRegisterState extends State<OtpRegister> {
         });
       },
       verificationFailed: (FirebaseAuthException e) {
-        Scaffold.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.message),
           ),

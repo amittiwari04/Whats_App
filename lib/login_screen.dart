@@ -1,4 +1,4 @@
-import 'package:WhatsApp/otp.dart';
+// import 'package:WhatsApp/otp.dart';
 import 'package:WhatsApp/otp_register.dart';
 import 'package:flutter/material.dart';
 
@@ -58,37 +58,37 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 child: Column(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15.0),
-                        color: Colors.green,
-                      ),
-                      margin: EdgeInsets.all(10),
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => OtpScreen(_controller.text),
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Login',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text('or'),
+                    // Container(
+                    //   decoration: BoxDecoration(
+                    //     borderRadius: BorderRadius.circular(15.0),
+                    //     color: Colors.green,
+                    //   ),
+                    //   margin: EdgeInsets.all(10),
+                    //   width: double.infinity,
+                    //   child: TextButton(
+                    //     onPressed: () {
+                    //       Navigator.of(context).push(
+                    //         MaterialPageRoute(
+                    //           builder: (context) => OtpScreen(_controller.text),
+                    //         ),
+                    //       );
+                    //     },
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.all(8.0),
+                    //       child: Text(
+                    //         'Login',
+                    //         style: TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 18,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 5,
+                    // ),
+                    // Text('or'),
                     SizedBox(
                       height: 5,
                     ),
@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            'Register',
+                            'Get Started',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,

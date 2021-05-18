@@ -99,9 +99,9 @@ class _OtpScreenState extends State<OtpScreen> {
                   });
                 } catch (e) {
                   FocusScope.of(context).unfocus();
-                  Scaffold.of(context).showSnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Invalid OTP'),
+                      content: const Text('Invalid OTP'),
                     ),
                   );
                 }
@@ -115,7 +115,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
   _verifyPhone() async {
     await FirebaseAuth.instance.verifyPhoneNumber(
-      
       phoneNumber: '+91${widget.phone}',
       verificationCompleted: (PhoneAuthCredential credential) {
         FirebaseAuth.instance
@@ -142,7 +141,7 @@ class _OtpScreenState extends State<OtpScreen> {
       },
       verificationFailed: (FirebaseAuthException e) {
         log(e.toString());
-        Scaffold.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.message),
           ),

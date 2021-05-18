@@ -1,4 +1,4 @@
-import 'dart:developer';
+// import 'dart:developer';
 
 import 'package:WhatsApp/HomeScreen/home_screen.dart';
 import 'package:WhatsApp/unique_user.dart';
@@ -132,7 +132,22 @@ class _UserNameScreenState extends State<UserNameScreen> {
                           'userName': userName,
                           'name': name,
                         });
-                        Navigator.of(context).push(
+                        // UniqueUser(
+                        //   name: name,
+                        //   userName: userName,
+                        //   uid: widget.uid,
+                        // );
+                        // Navigator.of(context).push(
+                        //   MaterialPageRoute(
+                        //     builder: (context) => HomeScreen(),
+                        //   ),
+                        // );
+                        Navigator.popUntil(
+                          context,
+                          (route) => route.isFirst,
+                        );
+                        Navigator.pushReplacement(
+                          context,
                           MaterialPageRoute(
                             builder: (context) => HomeScreen(),
                           ),

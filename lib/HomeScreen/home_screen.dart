@@ -1,6 +1,12 @@
+import 'package:WhatsApp/chat_screen.dart';
 import 'package:WhatsApp/login_screen.dart';
+import 'package:WhatsApp/unique_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../database_service.dart';
+import '../chat_screen.dart';
+
+import 'dart:developer';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,6 +14,39 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<void> logout() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.popUntil(
+      context,
+      (route) => route.isFirst,
+    );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(),
+      ),
+    );
+  }
+
+  String _selection;
+  TextEditingController controller = TextEditingController();
+
+  // bool search = false;
+  List<UniqueUser> _users = [];
+
+  Future<void> _setUpUsers() async {
+    List<UniqueUser> users = await DatabaseService.getUser();
+    setState(() {
+      _users = users;
+    });
+  }
+
+  @override
+  void initState() {
+    _setUpUsers();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -28,22 +67,68 @@ class _HomeScreenState extends State<HomeScreen> {
               child: IconButton(
                 iconSize: 29,
                 icon: Icon(Icons.search),
-                onPressed: ()  {
-                  
-                },
+                onPressed: () {},
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
+            // IconButton(
+            //   icon: Icon(Icons.more_vert),
+            //   onPressed: () async {
+            // await FirebaseAuth.instance.signOut();
+            // Navigator.popUntil(
+            //   context,
+            //   (route) => route.isFirst,
+            // );
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => LoginScreen(),
+            //   ),
+            // );
+
+            //   },
+            // ),
+            PopupMenuButton<String>(
+              onSelected: (String value) {
+                setState(() {
+                  _selection = value;
+                  if (_selection == '7') {
+                    logout();
+                  }
+                });
+              },
+
+              // child: IconButton(icon: Icon(Icons.more_vert), onPressed: () {}),
+              itemBuilder: (BuildContext context) {
+                return <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    child: Text('New group'),
+                    value: '1',
                   ),
-                  (route) => route.isFirst,
-                );
+                  const PopupMenuItem<String>(
+                    child: Text('New broadcast'),
+                    value: '2',
+                  ),
+                  const PopupMenuItem<String>(
+                    child: Text('WhatsApp Web'),
+                    value: '3',
+                  ),
+                  const PopupMenuItem<String>(
+                    child: Text('Starred messages'),
+                    value: '4',
+                  ),
+                  const PopupMenuItem<String>(
+                    child: Text('Payments'),
+                    value: '5',
+                  ),
+                  const PopupMenuItem<String>(
+                    child: Text('Settings'),
+                    value: '6',
+                  ),
+                  const PopupMenuItem<String>(
+                    child: Text('Logout'),
+                    value: '7',
+                  ),
+                ];
               },
             ),
           ],
@@ -63,7 +148,41 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: TabBarView(
           children: [
-            Text('CHATS'),
+            // Text('CHATS'),
+            RefreshIndicator(
+              onRefresh: () => _setUpUsers(),
+              child: ListView.builder(
+                itemCount: _users.length,
+                itemBuilder: (BuildContext context, int index) {
+                  log('hello');
+                  UniqueUser user = _users[index];
+                  return GestureDetector(
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: CircleAvatar(
+                            maxRadius: 28.0,
+                            backgroundImage: null,
+                          ),
+                          title: Text(user.userName ?? 'no username'),
+                          subtitle: Text(user.name ?? 'no name'),
+                        ),
+                        Divider(),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ChatScreen(
+                            user: user,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
             Text('STATUS'),
             Text('CALLS'),
           ],
